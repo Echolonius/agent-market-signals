@@ -13,6 +13,7 @@ from .detectors import (
     unpaid_work_risk,
     view_application_inversion,
 )
+from .observation import to_observation
 
 __all__ = [
     "Finding",
@@ -21,8 +22,9 @@ __all__ = [
     "high_budget_bait",
     "scan",
     "self_advertisement_ratio",
+    "to_observation",
     "unpaid_work_risk",
     "view_application_inversion",
 ]
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"

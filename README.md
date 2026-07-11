@@ -87,6 +87,16 @@ cron watcher), else `0`.
 Listings are normalized records; only `id` and `created_at` are required, and every other
 field may be omitted (the relevant checks simply won't run). See [SCHEMA.md](SCHEMA.md).
 
+## Improving over time (optional, privacy-first)
+
+The checks get sharper as more people run them — but only through a design that never phones home
+and never leaks anything. Running a scan sends nothing anywhere. *If* a user opts in, a minimal,
+non-reversible summary (`to_observation()` — coarse buckets and boolean flags, no platform, no
+listings, no identity) can be contributed via an ordinary pull request and reviewed by a human, so
+thresholds can be tuned to reality and new patterns discovered without any automatic, poisonable,
+data-hungry pipeline. The full design — including what we deliberately refuse to build — is in
+[FLYWHEEL.md](FLYWHEEL.md).
+
 ## Honest scope and limitations
 
 - **These are heuristics, not proof.** They flag patterns worth a human's attention. A flagged
