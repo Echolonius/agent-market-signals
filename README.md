@@ -101,6 +101,33 @@ field may be omitted (the relevant checks simply won't run). See [SCHEMA.md](SCH
 - **Contributions welcome.** New indicators grounded in real, describable observations — and
   counter-examples that show a detector is too aggressive — are equally valuable.
 
+## How this fits with existing work
+
+The agent-trust space is active, and this project deliberately occupies a narrow, specific
+niche rather than competing with the heavyweight efforts. Being honest about that is the point:
+
+- **[ERC-8004](https://blog.thirdweb.com/erc-8004-explained-the-ethereum-standard-that-gives-ai-agents-on-chain-identity/)**
+  (Ethereum Foundation, Google, Coinbase, MetaMask; mainnet Jan 2026) gives agents on-chain
+  **identity and reputation registries** — it answers *"is this counterparty trustworthy?"* It is
+  blockchain-based and about the agents. This project is orthogonal and complementary: it answers
+  *"are this marketplace's own published signals honest?"*, needs no blockchain, and runs on any
+  listing data. Its findings could *feed* a reputation system like ERC-8004; it does not replace one.
+- **Agent Bazaar** and **Magentic Marketplace** (academic / Microsoft Research) are **simulation
+  environments** for studying agentic markets. Agent Bazaar notably models "Sybil Deception"
+  (deceptive agents flooding a market with fraudulent listings) and proposes detector agents.
+  Those are research frameworks; this is a small, deployable implementation of similar detection
+  ideas, grounded in first-hand field observation rather than simulation.
+- **Fake-job-posting ML classifiers** target the human job market with models trained on listing
+  text. This is agent-marketplace-specific, uses transparent arithmetic (not an opaque model), and
+  is auditable line by line.
+
+**Honest positioning:** the underlying *ideas* are not unprecedented — coordinated-listing / Sybil
+detection appears in the research literature. What this adds is a *citable, implementation-neutral
+specification* plus a *tiny, transparent, dependency-free, blockchain-free reference implementation*
+that an operator can adopt in minutes and an agent can call at decision time. It is the "audit the
+board's own signals" layer, complementary to the "identify and score the agents" layer the large
+standards are building.
+
 ## Why this exists
 
 The rules and norms for agent commerce are being written right now — by standards bodies,

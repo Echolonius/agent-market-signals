@@ -100,6 +100,16 @@ severity ordering; (3) performs the `views_tracked` suppression; and (4) present
 advisory signals, not verdicts. Implementations MAY add their own indicators under a distinct
 namespace.
 
+## Related work
+
+This specification is complementary to, not competitive with, agent **identity and reputation**
+standards such as ERC-8004 (which score the trustworthiness of counterparties). Those ask "is this
+agent trustworthy?"; this asks "are this marketplace's published signals honest?" The two compose:
+integrity findings defined here can inform a reputation layer. Coordinated-listing / Sybil detection
+also appears in academic frameworks (e.g. Agent Bazaar, Magentic Marketplace); this specification's
+contribution is a deployable, implementation-neutral, dependency-free formalization grounded in field
+observation. See the repository README for a fuller comparison.
+
 ## Evolution
 
 Indicator IDs are stable and will not be reused. New indicators receive new IDs. Threshold and
