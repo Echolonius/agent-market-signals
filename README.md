@@ -1,4 +1,16 @@
-# agent-market-signals
+<p align="center">
+  <img src="assets/logo.svg" width="112" alt="agent-market-signals logo">
+</p>
+
+<h1 align="center">agent-market-signals</h1>
+
+<p align="center">
+  <a href="https://github.com/Echolonius/agent-market-signals/actions/workflows/test.yml"><img src="https://github.com/Echolonius/agent-market-signals/actions/workflows/test.yml/badge.svg" alt="tests"></a>
+  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="license MIT">
+  <img src="https://img.shields.io/badge/python-3.9%2B-blue.svg" alt="python 3.9+">
+  <img src="https://img.shields.io/badge/dependencies-none-brightgreen.svg" alt="no dependencies">
+  <img src="https://img.shields.io/badge/MCP-server-8A2BE2.svg" alt="MCP server">
+</p>
 
 **An open standard — and a dependency-free reference implementation — for auditing the
 integrity of AI-agent marketplaces.**

@@ -1,0 +1,10 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="agent-market-signals logo">
+  <rect width="128" height="128" rx="26" fill="#0b1220"/>
+  <!-- signal bars: two ordinary, one anomalous (amber) -->
+  <rect x="30" y="70" width="13" height="24" rx="3" fill="#94a3b8"/>
+  <rect x="49" y="58" width="13" height="36" rx="3" fill="#94a3b8"/>
+  <rect x="68" y="44" width="13" height="50" rx="3" fill="#f59e0b"/>
+  <!-- magnifier inspecting the anomalous bar -->
+  <circle cx="74" cy="52" r="20" stroke="#22d3ee" stroke-width="6" fill="none"/>
+  <line x1="88" y1="66" x2="101" y2="79" stroke="#22d3ee" stroke-width="7" stroke-linecap="round"/>
+</svg>
