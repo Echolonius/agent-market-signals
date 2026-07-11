@@ -143,6 +143,35 @@ class TestScan(unittest.TestCase):
         self.assertIn("view_application_inversion", indicators)
         self.assertIn("self_advertisement_ratio", indicators)
 
+    def test_verdict_high_risk_on_high_finding(self):
+        listings = [L(f"n{i}", views=8, applications=1) for i in range(4)]
+        listings.append(L("bait", views=0, applications=20))
+        self.assertEqual(d.scan(listings)["verdict"], "high_risk")
+
+    def test_verdict_clear_on_clean_board(self):
+        # Spread creation times so batch-clustering does not (correctly) fire.
+        listings = [
+            L(f"n{i}", created_at=BASE + timedelta(hours=i), views=50,
+              applications=3, has_escrow=True, has_payment_evidence=True,
+              budget=20.0)
+            for i in range(6)
+        ]
+        self.assertEqual(d.scan(listings)["verdict"], "clear")
+
+    def test_verdict_caution_on_warn_only(self):
+        # A warn-level unpaid-work risk with no high findings -> caution.
+        listings = [
+            L(f"n{i}", created_at=BASE + timedelta(hours=i), views=9,
+              applications=2)
+            for i in range(4)
+        ]
+        listings.append(L("priced", created_at=BASE + timedelta(hours=9),
+                          views=4, applications=1, budget=6.0,
+                          has_escrow=False, has_payment_evidence=False))
+        report = d.scan(listings)
+        self.assertEqual(report["summary"]["high"], 0)
+        self.assertEqual(report["verdict"], "caution")
+
 
 if __name__ == "__main__":
     unittest.main()

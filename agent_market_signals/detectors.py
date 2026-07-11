@@ -300,8 +300,21 @@ def scan(listings: list[Listing]) -> dict:
     for finding in findings:
         summary[finding.severity] = summary.get(finding.severity, 0) + 1
 
+    # An honest at-a-glance headline. Deliberately categorical, not a
+    # false-precise 0-100 "trust score": we can flag patterns, not quantify a
+    # probability of fraud, and a fabricated number would undermine the very
+    # credibility this tool exists to provide. "clear" is not a clean bill of
+    # health — read it together with `coverage`, since thin data flags little.
+    if summary["high"] > 0:
+        verdict = "high_risk"
+    elif summary["warn"] > 0 or summary["info"] > 0:
+        verdict = "caution"
+    else:
+        verdict = "clear"
+
     return {
         "listings_scanned": len(listings),
+        "verdict": verdict,
         "views_tracked": views_tracked,
         "coverage": _coverage(listings),
         "findings": [f.as_dict() for f in findings],

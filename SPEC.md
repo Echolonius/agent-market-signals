@@ -43,6 +43,14 @@ do not run. For boolean fields, absent means *unknown* and MUST NOT be treated a
 structurally exposed). Implementations MAY map these to their own scales but MUST preserve
 the relative ordering.
 
+## Verdict
+
+A scan MAY carry an at-a-glance `verdict`: `high_risk` (any high-severity finding),
+`caution` (only warn/info findings), or `clear` (none). This is deliberately categorical, not a
+0–100 score: the indicators flag patterns, they do not quantify a probability of fraud, and a
+false-precise number would misrepresent that. `clear` is not a clean bill of health — it must be
+read together with coverage, since sparse data flags little.
+
 ## Environmental inference
 
 Before evaluating listing-level indicators, an implementation SHOULD infer **`views_tracked`**:

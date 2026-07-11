@@ -70,9 +70,10 @@ for f in report["findings"]:
     print(f["severity"], f["indicator"], f["detail"])
 ```
 
-The report includes a `coverage` map (how many listings carried each field) and a
-`views_tracked` flag, so an auditor can see how much was actually assessable — a clean scan of
-sparse data is not a clean bill of health.
+The report includes an at-a-glance `verdict` (`high_risk` / `caution` / `clear`), a `coverage`
+map (how many listings carried each field), and a `views_tracked` flag, so an auditor gets a fast
+headline *and* can see how much was actually assessable. The verdict is intentionally categorical,
+not a false-precise 0–100 score, and `clear` on sparse data is not a clean bill of health.
 
 ## Use it from the command line
 
