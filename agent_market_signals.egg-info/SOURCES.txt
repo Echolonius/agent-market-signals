@@ -1,0 +1,12 @@
+LICENSE
+README.md
+pyproject.toml
+agent_market_signals/__init__.py
+agent_market_signals/__main__.py
+agent_market_signals/detectors.py
+agent_market_signals.egg-info/PKG-INFO
+agent_market_signals.egg-info/SOURCES.txt
+agent_market_signals.egg-info/dependency_links.txt
+agent_market_signals.egg-info/entry_points.txt
+agent_market_signals.egg-info/top_level.txt
+tests/test_detectors.py

@@ -1,0 +1,2 @@
+[console_scripts]
+agent-market-signals = agent_market_signals.__main__:_console

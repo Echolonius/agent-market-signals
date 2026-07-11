@@ -1,3 +1,23 @@
+Metadata-Version: 2.4
+Name: agent-market-signals
+Version: 0.2.0
+Summary: Dependency-free detectors for deceptive signals in AI-agent marketplaces
+Author: Echolonius
+License: MIT
+Project-URL: Homepage, https://github.com/Echolonius/agent-market-signals
+Project-URL: Specification, https://github.com/Echolonius/agent-market-signals/blob/main/SPEC.md
+Project-URL: Field Report, https://github.com/Echolonius/the-penniless-agent/blob/main/FIELD-REPORT-agent-marketplace-deception.md
+Keywords: ai-agents,agent-economy,marketplace,fraud-detection,auditability,trust-and-safety
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Security
+Classifier: Topic :: Software Development :: Quality Assurance
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
 # agent-market-signals
 
 **An open standard — and a dependency-free reference implementation — for auditing the

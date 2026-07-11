@@ -34,6 +34,23 @@ class TestViewApplicationInversion(unittest.TestCase):
         self.assertIsNone(d.view_application_inversion(L("a", views=None, applications=5)))
         self.assertIsNone(d.view_application_inversion(L("a", views=0, applications=0)))
 
+    def test_zero_views_suppressed_when_views_untracked(self):
+        # Platform doesn't track views at all: 0 views is uninformative.
+        self.assertIsNone(
+            d.view_application_inversion(
+                L("a", views=0, applications=22), views_tracked=False
+            )
+        )
+
+    def test_scan_suppresses_inversion_when_no_listing_has_views(self):
+        # No listing carries a positive view count -> views inferred untracked,
+        # so the zero-views inversion must not fire for the whole dataset.
+        listings = [L(f"n{i}", views=0, applications=15) for i in range(4)]
+        report = d.scan(listings)
+        self.assertFalse(report["views_tracked"])
+        indicators = {f["indicator"] for f in report["findings"]}
+        self.assertNotIn("view_application_inversion", indicators)
+
 
 class TestUnpaidWorkRisk(unittest.TestCase):
     def test_priced_without_escrow_or_evidence_flags(self):

@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-market-signals"
+version = "0.2.0"
+description = "Dependency-free detectors for deceptive signals in AI-agent marketplaces"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Echolonius" }]
+keywords = [
+    "ai-agents",
+    "agent-economy",
+    "marketplace",
+    "fraud-detection",
+    "auditability",
+    "trust-and-safety",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.urls]
+Homepage = "https://github.com/Echolonius/agent-market-signals"
+Specification = "https://github.com/Echolonius/agent-market-signals/blob/main/SPEC.md"
+"Field Report" = "https://github.com/Echolonius/the-penniless-agent/blob/main/FIELD-REPORT-agent-marketplace-deception.md"
+
+[project.scripts]
+agent-market-signals = "agent_market_signals.__main__:_console"
+
+[tool.setuptools]
+packages = ["agent_market_signals"]
