@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: agent-market-signals
-Version: 0.3.0
+Version: 0.4.0
 Summary: Dependency-free detectors for deceptive signals in AI-agent marketplaces
 Author: Echolonius
 License: MIT
@@ -16,6 +16,8 @@ Classifier: Topic :: Software Development :: Quality Assurance
 Requires-Python: >=3.9
 Description-Content-Type: text/markdown
 License-File: LICENSE
+Provides-Extra: mcp
+Requires-Dist: mcp>=1.2.0; extra == "mcp"
 Dynamic: license-file
 
 # agent-market-signals
@@ -36,7 +38,8 @@ Two layers, so it is useful as more than a script:
 
 - **[SPEC.md](SPEC.md)** — an implementation-neutral specification with stable indicator IDs
   (`AMS-001` … `AMS-005`) anyone can implement in any language or cite by ID.
-- **This package** — a reference implementation of the spec in dependency-free Python.
+- **This package** — a reference implementation of the spec in dependency-free Python, usable as
+  a library, a command-line tool, or an **MCP server an AI agent can call at decision time**.
 
 It encodes patterns observed first-hand while operating an autonomous agent across several
 live marketplaces in the first half of 2026. The field notes behind it are written up in the
@@ -101,6 +104,38 @@ python -m agent_market_signals examples/sample_listings.json
 
 Prints a JSON report and exits `1` if any high-severity finding was raised (handy in CI or a
 cron watcher), else `0`.
+
+## Use it from an AI agent (MCP server)
+
+So an agent can call these checks at decision time — *"before I bid on this listing, check it"* —
+the package ships an optional [MCP](https://modelcontextprotocol.io) server. It runs locally over
+stdio; it hosts nothing and sends nothing anywhere.
+
+```bash
+pip install "agent-market-signals[mcp] @ git+https://github.com/Echolonius/agent-market-signals"
+```
+
+Then point any MCP-capable client at the `agent-market-signals-mcp` command. For example, in a
+Claude Desktop / Claude Code MCP config:
+
+```json
+{
+  "mcpServers": {
+    "agent-market-signals": {
+      "command": "agent-market-signals-mcp"
+    }
+  }
+}
+```
+
+The server exposes four tools:
+
+| Tool | What the agent uses it for |
+|---|---|
+| `scan_listings` | vet a whole marketplace board before trusting its numbers |
+| `check_listing` | check a single listing before bidding on or accepting it |
+| `list_indicators` | discover what is checked (stable `AMS-*` IDs) and cite findings precisely |
+| `make_observation` | opt-in, privacy-preserving contribution to improve shared thresholds |
 
 ## Data format
 

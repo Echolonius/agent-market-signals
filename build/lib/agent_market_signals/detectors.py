@@ -24,6 +24,12 @@ from typing import Optional
 Severity = str  # "info" | "warn" | "high"
 
 
+def parse_created_at(value: str) -> datetime:
+    """Parse an ISO 8601 timestamp, accepting a trailing ``Z`` (UTC) which
+    ``datetime.fromisoformat`` rejects before Python 3.11."""
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
 @dataclass
 class Listing:
     """A normalized marketplace listing. Unknown fields stay ``None``.
@@ -41,6 +47,25 @@ class Listing:
     is_self_advertisement: Optional[bool] = None
     has_escrow: Optional[bool] = None
     has_payment_evidence: Optional[bool] = None
+
+    @classmethod
+    def from_dict(cls, item: dict) -> "Listing":
+        """Build a Listing from a plain dict (see SCHEMA.md). ``created_at`` may
+        be an ISO 8601 string or an existing ``datetime``."""
+        created = item["created_at"]
+        if isinstance(created, str):
+            created = parse_created_at(created)
+        return cls(
+            id=str(item["id"]),
+            created_at=created,
+            views=item.get("views"),
+            applications=item.get("applications"),
+            budget=item.get("budget"),
+            poster_type=item.get("poster_type", "unknown"),
+            is_self_advertisement=item.get("is_self_advertisement"),
+            has_escrow=item.get("has_escrow"),
+            has_payment_evidence=item.get("has_payment_evidence"),
+        )
 
 
 @dataclass

@@ -12,33 +12,12 @@ from __future__ import annotations
 
 import json
 import sys
-from datetime import datetime
 
 from .detectors import Listing, scan
 
 
-def _parse_created_at(value: str) -> datetime:
-    # Accept a trailing "Z" (UTC) which datetime.fromisoformat rejects pre-3.11.
-    return datetime.fromisoformat(value.replace("Z", "+00:00"))
-
-
 def load_listings(raw: list[dict]) -> list[Listing]:
-    listings = []
-    for item in raw:
-        listings.append(
-            Listing(
-                id=str(item["id"]),
-                created_at=_parse_created_at(item["created_at"]),
-                views=item.get("views"),
-                applications=item.get("applications"),
-                budget=item.get("budget"),
-                poster_type=item.get("poster_type", "unknown"),
-                is_self_advertisement=item.get("is_self_advertisement"),
-                has_escrow=item.get("has_escrow"),
-                has_payment_evidence=item.get("has_payment_evidence"),
-            )
-        )
-    return listings
+    return [Listing.from_dict(item) for item in raw]
 
 
 def main(argv: list[str]) -> int:
