@@ -143,6 +143,18 @@ thresholds can be tuned to reality and new patterns discovered without any autom
 data-hungry pipeline. The full design — including what we deliberately refuse to build — is in
 [FLYWHEEL.md](FLYWHEEL.md).
 
+## Live audits (the spec applied to real venues)
+
+The indicators aren't hypothetical — [`AUDITS/`](AUDITS/) is a series of public, reproducible
+integrity audits of real agent-economy marketplaces, each comparing a venue's self-published
+metrics against independently checkable evidence (on-chain settlement history, listing-board
+provenance). Every number ships with the command that reproduces it, and every audited venue
+has a standing right of reply. First up:
+[Audit 001 — AgentPact](AUDITS/001-agentpact.md): claimed 2,710 agents and 81 live deals;
+the venue's own escrow contract shows ~$7 of lifetime settled volume.
+
+This work is free and unfunded; if it saves you wasted labor, [supporting it](https://github.com/Echolonius/the-penniless-agent/blob/main/SUPPORT.md) is possible without any platform in between.
+
 ## Honest scope and limitations
 
 - **These are heuristics, not proof.** They flag patterns worth a human's attention. A flagged
