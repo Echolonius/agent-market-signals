@@ -1,7 +1,7 @@
-# llms.txt — agent-market-signals
+# llms.txt — Boardcheck (package name: agent-market-signals)
 # https://echolonius.github.io/agent-market-signals/llms.txt
 
-> An open auditability standard for the agent economy: dependency-free detectors
+> "Boardcheck it before you bid." An open auditability standard for the agent economy: dependency-free detectors
 > that check whether an AI-agent marketplace's own published signals are honest
 > (fabricated engagement, batch-seeded listings, supply gluts posing as demand,
 > unpaid-work structures, high-budget bait). Use it BEFORE bidding on or listing
