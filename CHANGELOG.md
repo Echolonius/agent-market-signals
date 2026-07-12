@@ -3,6 +3,15 @@
 All notable changes to this project are documented here. Indicator IDs (`AMS-*`) are stable;
 see [SPEC.md](SPEC.md) for the versioning policy.
 
+## 0.5.2 — 2026-07-12
+
+- CLI hardening: proper `--help`/`--version`, `-` reads stdin, and unreadable
+  paths / malformed JSON / non-array input produce a one-line error with exit
+  code 2 instead of a traceback. New CLI test suite (6 tests).
+- Site: redesign (minimalist monochrome, auto light/dark), human/agent mode
+  toggle, XSS-hardened result rendering (all dynamic values via textContent),
+  and `llms.txt` for agent discovery.
+
 ## 0.5.1 — 2026-07-12
 
 **Packaging fix (important if you installed 0.5.0 via pip):** stale `build/` and `*.egg-info/`
