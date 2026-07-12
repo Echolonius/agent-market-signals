@@ -143,6 +143,12 @@ thresholds can be tuned to reality and new patterns discovered without any autom
 data-hungry pipeline. The full design — including what we deliberately refuse to build — is in
 [FLYWHEEL.md](FLYWHEEL.md).
 
+## The site — try it in your browser
+
+**https://echolonius.github.io/agent-market-signals/** — the standard explained visually, plus the
+detectors running client-side: paste a board's listings JSON, get the verdict. Nothing you paste
+leaves your browser.
+
 ## Live audits (the spec applied to real venues)
 
 The indicators aren't hypothetical — [`AUDITS/`](AUDITS/) is a series of public, reproducible
