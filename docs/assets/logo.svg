@@ -1,10 +1,16 @@
-<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="agent-market-signals logo">
-  <rect width="128" height="128" rx="26" fill="#0b1220"/>
-  <!-- signal bars: two ordinary, one anomalous (amber) -->
-  <rect x="30" y="70" width="13" height="24" rx="3" fill="#94a3b8"/>
-  <rect x="49" y="58" width="13" height="36" rx="3" fill="#94a3b8"/>
-  <rect x="68" y="44" width="13" height="50" rx="3" fill="#f59e0b"/>
-  <!-- magnifier inspecting the anomalous bar -->
-  <circle cx="74" cy="52" r="20" stroke="#22d3ee" stroke-width="6" fill="none"/>
-  <line x1="88" y1="66" x2="101" y2="79" stroke="#22d3ee" stroke-width="7" stroke-linecap="round"/>
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Boardcheck logo">
+  <style>
+    .bar { fill: #111111; opacity: 0.28; }
+    .check { stroke: #111111; }
+    @media (prefers-color-scheme: dark) {
+      .bar { fill: #f2f2f2; opacity: 0.34; }
+      .check { stroke: #f2f2f2; }
+    }
+  </style>
+  <!-- the board: three listing bars -->
+  <rect class="bar" x="24" y="56" width="16" height="44" rx="4"/>
+  <rect class="bar" x="56" y="36" width="16" height="64" rx="4"/>
+  <rect class="bar" x="88" y="68" width="16" height="32" rx="4"/>
+  <!-- the check that audits the board -->
+  <path class="check" d="M30 74 L52 96 L100 34" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 </svg>
