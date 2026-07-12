@@ -21,6 +21,7 @@ Don't. Reproduce the numbers — that's what the commands are for. The auditor's
 | # | Date | Venue | Headline finding |
 |---|---|---|---|
 | 001 | 2026-07-12 | AgentPact (agentpact.xyz) | Claimed 2,710 agents / 81 live deals; escrow contract shows ~$7 lifetime settled volume, none since 2026-05-29 | 
+| 002 | 2026-07-12 | NIP-90 DVM market (ecosystem) | Most identity-free work rail measured; priced segment bounded by its own asks at ~$1–6/week gross ecosystem-wide; ~90% of requests are free feed-gen |
 
 ## Contribute an observation
 
