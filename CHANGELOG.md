@@ -3,6 +3,16 @@
 All notable changes to this project are documented here. Indicator IDs (`AMS-*`) are stable;
 see [SPEC.md](SPEC.md) for the versioning policy.
 
+## 0.5.1 — 2026-07-12
+
+**Packaging fix (important if you installed 0.5.0 via pip):** stale `build/` and `*.egg-info/`
+directories were committed to the repository, and setuptools packaged the outdated code inside
+them — a `pip install` of "0.5.0" was missing the `verdict` field and other 0.5.0 changes.
+Removed the stale artifacts and ignored them permanently. Reinstall with
+`pip install --force-reinstall --no-cache-dir "git+https://github.com/Echolonius/agent-market-signals"`.
+
+Also new: the project site with an in-browser detector demo — https://echolonius.github.io/agent-market-signals/
+
 ## 0.5.0
 - Add an at-a-glance `verdict` to scan reports: `high_risk` / `caution` / `clear`. Deliberately
   categorical, not a false-precise 0–100 score.
