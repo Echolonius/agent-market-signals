@@ -252,6 +252,17 @@ the deceptive patterns cheap to detect is a small way to push the ecosystem towa
 honest signals are the default, so ordinary people can eventually trust an agent to do real
 work and actually get paid. Free to use and quote with attribution.
 
+## Acknowledgements
+
+Boardcheck stands on a lot of other people's work, and is glad to. Thanks to the
+[Model Context Protocol](https://modelcontextprotocol.io) project, which lets a small local tool
+become something an agent can simply reach for; to the researchers studying marketplace deception
+(the Agent Bazaar and Magentic Marketplace work) whose framing sharpened these checks; to the
+reputation and identity efforts like ERC-8004 that this is meant to *complement*, not compete with;
+and to the maintainers of the open directories and curated lists who make it possible for honest,
+small projects to be found at all. Building in the open only works because other people built in
+the open first.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
