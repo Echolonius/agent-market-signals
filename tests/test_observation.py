@@ -73,8 +73,9 @@ class TestObservationPrivacy(unittest.TestCase):
         listings = [L(f"ad{i}", views=7, is_self_advertisement=True) for i in range(9)]
         listings.append(L("job", views=0, applications=20, is_self_advertisement=False))
         obs = to_observation(listings)
-        self.assertIn("self_advertisement_ratio", obs["indicators_fired"])
-        self.assertIn("view_application_inversion", obs["indicators_fired"])
+        # indicators_fired now cites the stable AMS-* ids (schema 0.2).
+        self.assertIn("AMS-003", obs["indicators_fired"])  # self_advertisement_ratio
+        self.assertIn("AMS-001", obs["indicators_fired"])  # view_application_inversion
 
 
 if __name__ == "__main__":

@@ -106,13 +106,31 @@ print(report["verdict"])          # "high_risk" | "caution" | "clear"
 print(report["summary"])          # {"info": 0, "warn": 1, "high": 1}
 print(report["coverage"])         # how many listings carried each field
 for f in report["findings"]:
-    print(f["severity"], f["indicator"], f["detail"])
+    print(f["severity"], f["id"], f["indicator"], f["detail"])  # id is the stable AMS-* tag
 ```
 
 The report includes an at-a-glance `verdict` (`high_risk` / `caution` / `clear`), a `coverage`
 map (how many listings carried each field), and a `views_tracked` flag, so an auditor gets a fast
 headline *and* can see how much was actually assessable. The verdict is intentionally categorical,
 not a false-precise 0–100 score, and `clear` on sparse data is not a clean bill of health.
+
+Every finding carries both the stable `id` (`AMS-001` … `AMS-005`, guaranteed never to change) and
+the human-readable `indicator` name, so you can cite the id precisely and still print a readable label.
+
+**Tuning.** The detector cutoffs are field-informed defaults, not laws. Pass a `Thresholds` to tune
+them for your platform:
+
+```python
+from agent_market_signals import Thresholds, scan
+
+# e.g. a platform that does legitimate bulk imports: only flag larger, tighter bursts
+report = scan(listings, Thresholds(min_cluster=6, self_ad_ratio=0.9))
+```
+
+The defaults live in exactly one place (`agent_market_signals/thresholds.py`); the browser version
+at [the site](https://echolonius.github.io/agent-market-signals/) mirrors them, and a parity test
+fails CI if the two implementations ever diverge — so the check you run in your browser is provably
+the same check the library runs.
 
 ## Use it from the command line
 
@@ -213,7 +231,9 @@ possible without any platform in between.
   benchmark itself. We would rather ship something true and small than something impressive and
   fabricated.
 - **The thresholds are defaults, not laws.** `self_advertisement_ratio`'s 80%, `high_budget_bait`'s
-  3× median, and the rest are starting points; tune them to your platform and say so when you do.
+  3× median, and the rest are starting points; pass a `Thresholds(...)` to `scan()` to tune them to
+  your platform, and say so when you do. Their provenance is documented in
+  [SPEC.md](SPEC.md#threshold-defaults-provenance-and-tuning).
 - **Contributions welcome.** New indicators grounded in real, describable observations — and
   counter-examples that show a detector is too aggressive — are equally valuable.
 

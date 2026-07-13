@@ -100,13 +100,31 @@ real buyer engagement.
 **Known false positives:** genuinely large, newly-posted, not-yet-viewed listings; tune the
 multiple to the platform.
 
+## Threshold defaults, provenance, and tuning
+
+Every numeric cutoff has a single authoritative definition — in the reference implementation,
+`agent_market_signals/thresholds.py`; the browser port mirrors it and a parity test fails if the two
+ever diverge. The defaults are **field-informed engineering choices, not statistically fitted
+cutoffs**; this specification deliberately claims no measured false-positive rate it has not
+established.
+
+| Indicator | Knob | Default | Rationale for the default |
+|---|---|---|---|
+| AMS-002 | window / min cluster | 1 s / 3 | three listings sharing one second is already past plausible independent arrival |
+| AMS-003 | self-advertisement ratio | 0.80 | three live boards measured ~95% self-advertisement; 0.80 sits well under that yet clears ordinary mixed boards |
+| AMS-005 | budget multiple | 3× median | the point where an above-norm budget starts reading as bait in observed seeded listings |
+
+All cutoffs are tunable per platform. A conforming implementation SHOULD document any non-default
+values it uses. Changing a *default* is a minor-version event (see Evolution).
+
 ## Conformance
 
 An implementation conforms to v0.2 if it: (1) accepts listings in the data model above,
-treating absent fields as unknown; (2) emits findings tagged with these indicator IDs and the
-severity ordering; (3) performs the `views_tracked` suppression; and (4) presents findings as
-advisory signals, not verdicts. Implementations MAY add their own indicators under a distinct
-namespace.
+treating absent fields as unknown; (2) emits findings tagged with these stable indicator IDs
+(the reference implementation tags each finding with both the id, e.g. `AMS-001`, and a
+human-readable detector name) and preserves the severity ordering; (3) performs the
+`views_tracked` suppression; and (4) presents findings as advisory signals, not verdicts.
+Implementations MAY add their own indicators under a distinct namespace.
 
 ## Related work
 

@@ -17,17 +17,50 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from statistics import median
 from typing import Optional
 
+from .catalog import INDICATORS
+from .thresholds import DEFAULTS, Thresholds
+
 Severity = str  # "info" | "warn" | "high"
+
+# Stable AMS-* id for each detector name (single source: catalog.py, which
+# mirrors SPEC.md). Findings carry both the stable id and the human-readable
+# name so callers can cite the id the SPEC guarantees will never change.
+_ID_BY_NAME = {ind["name"]: ind["id"] for ind in INDICATORS}
+
+
+def _num(x) -> str:
+    """Render a number the way the site's JavaScript port does: plain, shortest
+    round-trip, no scientific notation for ordinary magnitudes. This keeps a
+    finding's ``detail`` text identical between the library and the browser for
+    the same input (Python's ``:g`` would print e.g. ``5e+06`` where JS prints
+    ``5000000``). Verified against the JS port by tests/test_parity.py."""
+    f = float(x)
+    return str(int(f)) if f.is_integer() else repr(f)
+
+
+def _pct(ratio: float) -> int:
+    """Percent, rounded half-up — matching the JS port's ``Math.round(r*100)``.
+    (Python's default/``:.0%`` rounding is half-to-even, which disagrees with JS
+    on exact-half values like 82.5%.)"""
+    return int(ratio * 100 + 0.5)
 
 
 def parse_created_at(value: str) -> datetime:
     """Parse an ISO 8601 timestamp, accepting a trailing ``Z`` (UTC) which
-    ``datetime.fromisoformat`` rejects before Python 3.11."""
-    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    ``datetime.fromisoformat`` rejects before Python 3.11.
+
+    A timestamp without an explicit offset is interpreted as **UTC**, not the
+    host's local time — a marketplace creation time is a fact, and the result
+    must not depend on where the check runs. The JS port applies the same rule,
+    so both agree on the AMS-002 time buckets regardless of host timezone."""
+    dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt
 
 
 @dataclass
@@ -77,6 +110,7 @@ class Finding:
 
     def as_dict(self) -> dict:
         return {
+            "id": _ID_BY_NAME.get(self.indicator, self.indicator),
             "indicator": self.indicator,
             "severity": self.severity,
             "listing_id": self.listing_id,
@@ -140,7 +174,7 @@ def unpaid_work_risk(listing: Listing) -> Optional[Finding]:
         return Finding(
             "unpaid_work_risk",
             "warn",
-            f"priced ({listing.budget:g}) with no escrow and no payment-evidence "
+            f"priced ({_num(listing.budget)}) with no escrow and no payment-evidence "
             "mechanism — payment depends solely on poster discretion after delivery",
             listing.id,
         )
@@ -152,7 +186,9 @@ def unpaid_work_risk(listing: Listing) -> Optional[Finding]:
 # --------------------------------------------------------------------------
 
 def batch_creation_clustering(
-    listings: list[Listing], window_seconds: int = 1, min_cluster: int = 3
+    listings: list[Listing],
+    window_seconds: int = DEFAULTS.window_seconds,
+    min_cluster: int = DEFAULTS.min_cluster,
 ) -> list[Finding]:
     """Listings created within the same tight time window.
 
@@ -182,7 +218,7 @@ def batch_creation_clustering(
 
 
 def self_advertisement_ratio(
-    listings: list[Listing], threshold: float = 0.8
+    listings: list[Listing], threshold: float = DEFAULTS.self_ad_ratio
 ) -> Optional[Finding]:
     """Share of listings that are agents advertising their own services.
 
@@ -198,7 +234,7 @@ def self_advertisement_ratio(
         return Finding(
             "self_advertisement_ratio",
             "high",
-            f"{ratio:.0%} of listings are agent self-advertisements (n={len(known)}) "
+            f"{_pct(ratio)}% of listings are agent self-advertisements (n={len(known)}) "
             "— supply glut marketed as demand",
         )
     return None
@@ -206,7 +242,7 @@ def self_advertisement_ratio(
 
 def high_budget_bait(
     listings: list[Listing],
-    budget_multiple: float = 3.0,
+    budget_multiple: float = DEFAULTS.budget_multiple,
     views_tracked: bool = True,
 ) -> list[Finding]:
     """Far-above-median budgets that have drawn zero views. (Indicator AMS-005.)
@@ -238,8 +274,8 @@ def high_budget_bait(
                 Finding(
                     "high_budget_bait",
                     "warn",
-                    f"budget {listing.budget:g} is >={budget_multiple:g}x the platform "
-                    f"median ({med:g}) with 0 views — seeded high-budget bait",
+                    f"budget {_num(listing.budget)} is >={_num(budget_multiple)}x the platform "
+                    f"median ({_num(med)}) with 0 views — seeded high-budget bait",
                     listing.id,
                 )
             )
@@ -269,14 +305,22 @@ def _coverage(listings: list[Listing]) -> dict:
     return {f: {"present": present(f), "of": n} for f in fields}
 
 
-def scan(listings: list[Listing]) -> dict:
+def scan(listings: list[Listing], thresholds: Optional[Thresholds] = None) -> dict:
     """Run every detector and return findings, a severity summary, and a
     data-coverage report.
 
     Whether views are tracked platform-wide is inferred once (any listing with
     a positive view count) and threaded into the view-based detectors so a
     platform that simply does not expose views is not flagged for it.
+
+    ``thresholds`` tunes the detector cutoffs; it defaults to the field-informed
+    :data:`~agent_market_signals.thresholds.DEFAULTS`. The defaults are the same
+    values every implementation ships, so an unconfigured scan here and in the
+    browser port agree (enforced by ``tests/test_parity.py``).
     """
+    if thresholds is None:
+        thresholds = DEFAULTS
+
     views_tracked = any(
         l.views is not None and l.views > 0 for l in listings
     )
@@ -290,11 +334,23 @@ def scan(listings: list[Listing]) -> dict:
         if result is not None:
             findings.append(result)
 
-    findings.extend(batch_creation_clustering(listings))
-    ratio = self_advertisement_ratio(listings)
+    findings.extend(
+        batch_creation_clustering(
+            listings,
+            window_seconds=thresholds.window_seconds,
+            min_cluster=thresholds.min_cluster,
+        )
+    )
+    ratio = self_advertisement_ratio(listings, threshold=thresholds.self_ad_ratio)
     if ratio is not None:
         findings.append(ratio)
-    findings.extend(high_budget_bait(listings, views_tracked=views_tracked))
+    findings.extend(
+        high_budget_bait(
+            listings,
+            budget_multiple=thresholds.budget_multiple,
+            views_tracked=views_tracked,
+        )
+    )
 
     summary = {"info": 0, "warn": 0, "high": 0}
     for finding in findings:

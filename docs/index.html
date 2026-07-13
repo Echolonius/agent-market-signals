@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Boardcheck — is that marketplace lying to you?</title>
 <meta name="description" content="Check whether an AI-agent job board's numbers are honest — in 30 seconds, in your browser, nothing leaves the page. For people and for AI agents.">
@@ -258,8 +258,11 @@ clear     -> proceed, but read `coverage` first: thin data flags little,
 </footer>
 </div>
 
+<script src="boardcheck.js"></script>
 <script>
 "use strict";
+// Detectors live in boardcheck.js (the single source shared with the parity
+// test). This block is only page glue: sample data, mode toggle, and rendering.
 const SAMPLE = [
  {"id":"synthetic-bait-1","created_at":"2026-01-14T12:00:00Z","views":0,"applications":24,"budget":2500.0,"poster_type":"human","is_self_advertisement":false,"has_escrow":false,"has_payment_evidence":false},
  {"id":"synthetic-bait-2","created_at":"2026-01-14T12:00:00Z","views":0,"applications":20,"budget":1800.0,"poster_type":"human","is_self_advertisement":false,"has_escrow":false,"has_payment_evidence":false},
@@ -278,66 +281,8 @@ function setMode(m){
   try{ localStorage.setItem('ams-mode', m); }catch(e){}
 }
 
-// ---- faithful port of agent_market_signals.detectors.scan() ----
-// Same semantics as the Python reference: unknown (null/missing) is never
-// treated as false; views_tracked inferred once per scan.
-function norm(item){
-  const t = Date.parse(String(item.created_at));
-  if (Number.isNaN(t)) throw new Error("bad created_at on listing "+String(item.id));
-  return {
-    id:String(item.id), ts:Math.floor(t/1000),
-    views: item.views ?? null, applications: item.applications ?? null,
-    budget: item.budget ?? null,
-    is_self_advertisement: item.is_self_advertisement ?? null,
-    has_escrow: item.has_escrow ?? null,
-    has_payment_evidence: item.has_payment_evidence ?? null
-  };
-}
-function median(a){const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2}
-function scan(listings){
-  const L = listings.map(norm);
-  const viewsTracked = L.some(l=>l.views!==null && l.views>0);
-  const F = [];
-  for (const l of L){
-    const v=l.views, a=l.applications;
-    if (v!==null && a!==null && a>0){
-      if (v===0){ if (viewsTracked) F.push({i:"AMS-001",n:"view_application_inversion",s:"high",id:l.id,
-        d:`${a} application(s) with 0 views — applying requires viewing, so this count is arithmetically implausible and may be fabricated`}); }
-      else if (a>v) F.push({i:"AMS-001",n:"view_application_inversion",s:"warn",id:l.id,
-        d:`${a} applications exceed ${v} views — anomalous engagement`});
-    }
-    if (l.budget!==null && l.budget>0 && l.has_escrow===false && l.has_payment_evidence===false)
-      F.push({i:"AMS-004",n:"unpaid_work_risk",s:"warn",id:l.id,
-        d:`priced (${l.budget}) with no escrow and no payment-evidence mechanism — payment depends solely on poster discretion after delivery`});
-  }
-  const buckets={};
-  for (const l of L) (buckets[l.ts]=buckets[l.ts]||[]).push(l.id);
-  for (const ids of Object.values(buckets)) if (ids.length>=3)
-    F.push({i:"AMS-002",n:"batch_creation_clustering",s:"warn",id:null,
-      d:`${ids.length} listings created within a 1s window (${ids.sort().join(", ")}) — consistent with automated seeding`});
-  const known=L.filter(l=>l.is_self_advertisement!==null);
-  if (known.length){
-    const r=known.filter(l=>l.is_self_advertisement).length/known.length;
-    if (r>=0.8) F.push({i:"AMS-003",n:"self_advertisement_ratio",s:"high",id:null,
-      d:`${Math.round(r*100)}% of listings are agent self-advertisements (n=${known.length}) — supply glut marketed as demand`});
-  }
-  if (viewsTracked){
-    const budgets=L.filter(l=>l.budget && l.budget>0).map(l=>l.budget);
-    if (budgets.length>=3){
-      const med=median(budgets);
-      if (med>0) for (const l of L)
-        if (l.budget && l.budget>=3*med && l.views===0)
-          F.push({i:"AMS-005",n:"high_budget_bait",s:"warn",id:l.id,
-            d:`budget ${l.budget} is >=3x the platform median (${med}) with 0 views — seeded high-budget bait`});
-    }
-  }
-  const summary={info:0,warn:0,high:0};
-  for (const f of F) summary[f.s]++;
-  const verdict = summary.high>0 ? "high_risk" : (summary.warn>0||summary.info>0) ? "caution" : "clear";
-  const fields=["views","applications","budget","is_self_advertisement","has_escrow","has_payment_evidence"];
-  const coverage=Object.fromEntries(fields.map(f=>[f,{present:L.filter(l=>l[f]!==null).length,of:L.length}]));
-  return {verdict, viewsTracked, findings:F, summary, coverage, n:L.length};
-}
+// scan()/norm()/median() come from boardcheck.js (loaded above) — the single
+// detector source this page shares with the parity test.
 
 // ---- rendering: all dynamic values go through textContent, never innerHTML ----
 function el(tag, cls, text){

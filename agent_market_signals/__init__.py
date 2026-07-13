@@ -14,10 +14,13 @@ from .detectors import (
     view_application_inversion,
 )
 from .observation import to_observation
+from .thresholds import DEFAULTS, Thresholds
 
 __all__ = [
+    "DEFAULTS",
     "Finding",
     "Listing",
+    "Thresholds",
     "batch_creation_clustering",
     "high_budget_bait",
     "scan",
@@ -27,4 +30,4 @@ __all__ = [
     "view_application_inversion",
 ]
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"

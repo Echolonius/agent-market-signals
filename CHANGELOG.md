@@ -3,6 +3,38 @@
 All notable changes to this project are documented here. Indicator IDs (`AMS-*`) are stable;
 see [SPEC.md](SPEC.md) for the versioning policy.
 
+## 0.6.0 — 2026-07-13
+
+Robustness release: the detector logic exists in two places (the Python reference and the
+browser port on the site), and this release makes it impossible for them to drift silently.
+
+- **JS↔Python parity test.** A shared fixture battery (`tests/parity_fixtures.json`) runs through
+  both the Python `scan()` and the site's detector under Node; `tests/test_parity.py` asserts they
+  produce identical findings, verdict, summary, and coverage — and that the threshold constants
+  match. CI now runs Node so the site's port is tested on every push. Change one implementation and
+  not the other and the build goes red. The parity check compares the human-readable finding
+  **text** too, not just the finding identity/verdict/summary.
+- **Site and library now render identical finding text** (fixes found by an adversarial review of
+  this release): a timestamp with no explicit offset is interpreted as **UTC** in both
+  implementations (Python previously used the host's local timezone, which could shift the AMS-002
+  time buckets on a non-UTC machine); and numbers/percentages use matched formatting, so Python no
+  longer prints `5e+06` / `82%` where the site prints `5000000` / `83%`. Finding identity, verdict,
+  and summary were already identical; this aligns the explanatory text as well.
+- **Single source for the site's detectors.** The `norm`/`median`/`scan` code moved out of
+  `index.html` into `docs/boardcheck.js`, which the site *and* the parity test both load. The site's
+  CSP was updated to allow that same-origin script (`script-src 'self' 'unsafe-inline'`).
+- **Tunable thresholds.** `scan(listings, Thresholds(...))` lets you tune the cutoffs; the
+  field-informed defaults (self-ad 0.80, budget 3× median, cluster 3/1 s) are unchanged and now
+  have one authoritative home (`agent_market_signals/thresholds.py`) with documented provenance in
+  SPEC.md. No default value changed, so scan results are identical to 0.5.x.
+- **Findings carry the stable AMS id.** Each finding dict now includes `id` (`AMS-001` … `AMS-005`)
+  alongside the existing `indicator` name, so callers can cite the id the SPEC guarantees is stable.
+- **Observation schema → 0.2.** `indicators_fired` now lists AMS ids rather than detector function
+  names, so the shared privacy-preserving format survives internal renames. (Privacy properties are
+  unchanged; ids are no more identifying than names.)
+- **Fixed version drift:** `__init__.__version__` said `0.5.0` while `pyproject.toml` said `0.5.2`;
+  both are now `0.6.0`.
+
 ## 0.5.2 — 2026-07-12
 
 - CLI hardening: proper `--help`/`--version`, `-` reads stdin, and unreadable

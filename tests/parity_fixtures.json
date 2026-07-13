@@ -1,0 +1,543 @@
+{
+  "_comment": "Shared fixture battery for the Python<->JavaScript parity test. Each case is run through agent_market_signals.scan() AND docs/boardcheck.js scan(); tests/test_parity.py asserts identical structural output. Cases are chosen to exercise each indicator and its edges (threshold boundaries, unknown-vs-false, views-tracked suppression, numeric ids, even/odd median). Edit boardcheck.js or detectors.py in a way that diverges and one of these fails.",
+  "cases": [
+    {
+      "name": "empty",
+      "listings": []
+    },
+    {
+      "name": "ams001_high_when_views_tracked",
+      "listings": [
+        {
+          "id": "a",
+          "created_at": "2026-03-01T10:00:00Z",
+          "views": 0,
+          "applications": 5
+        },
+        {
+          "id": "b",
+          "created_at": "2026-03-01T10:05:00Z",
+          "views": 9,
+          "applications": 2
+        }
+      ]
+    },
+    {
+      "name": "ams001_suppressed_when_views_untracked",
+      "listings": [
+        {
+          "id": "a",
+          "created_at": "2026-03-01T10:00:00Z",
+          "views": 0,
+          "applications": 5
+        },
+        {
+          "id": "b",
+          "created_at": "2026-03-01T10:05:00Z",
+          "views": 0,
+          "applications": 3
+        }
+      ]
+    },
+    {
+      "name": "ams001_warn_positive_views",
+      "listings": [
+        {
+          "id": "a",
+          "created_at": "2026-03-01T10:00:00Z",
+          "views": 3,
+          "applications": 5
+        }
+      ]
+    },
+    {
+      "name": "ams004_unpaid_plus_unknown_control",
+      "listings": [
+        {
+          "id": "paid_risk",
+          "created_at": "2026-03-01T10:00:00Z",
+          "budget": 100,
+          "has_escrow": false,
+          "has_payment_evidence": false
+        },
+        {
+          "id": "unknown_ctrl",
+          "created_at": "2026-03-01T10:05:00Z",
+          "budget": 100,
+          "has_escrow": null,
+          "has_payment_evidence": false
+        }
+      ]
+    },
+    {
+      "name": "ams002_cluster_exactly_min",
+      "listings": [
+        {
+          "id": "c1",
+          "created_at": "2026-03-01T10:00:00Z"
+        },
+        {
+          "id": "c2",
+          "created_at": "2026-03-01T10:00:00Z"
+        },
+        {
+          "id": "c3",
+          "created_at": "2026-03-01T10:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "ams002_below_min",
+      "listings": [
+        {
+          "id": "c1",
+          "created_at": "2026-03-01T10:00:00Z"
+        },
+        {
+          "id": "c2",
+          "created_at": "2026-03-01T10:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "ams003_selfad_boundary_fires",
+      "listings": [
+        {
+          "id": "s1",
+          "created_at": "2026-03-01T10:00:00Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s2",
+          "created_at": "2026-03-01T10:01:00Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s3",
+          "created_at": "2026-03-01T10:02:00Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s4",
+          "created_at": "2026-03-01T10:03:00Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "j1",
+          "created_at": "2026-03-01T10:04:00Z",
+          "is_self_advertisement": false
+        },
+        {
+          "id": "u1",
+          "created_at": "2026-03-01T10:05:00Z",
+          "is_self_advertisement": null
+        }
+      ]
+    },
+    {
+      "name": "ams003_below_boundary",
+      "listings": [
+        {
+          "id": "s1",
+          "created_at": "2026-03-01T10:00:00Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s2",
+          "created_at": "2026-03-01T10:01:00Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s3",
+          "created_at": "2026-03-01T10:02:00Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "j1",
+          "created_at": "2026-03-01T10:03:00Z",
+          "is_self_advertisement": false
+        }
+      ]
+    },
+    {
+      "name": "ams005_bait_even_median",
+      "listings": [
+        {
+          "id": "n1",
+          "created_at": "2026-03-01T10:00:00Z",
+          "views": 5,
+          "budget": 10
+        },
+        {
+          "id": "n2",
+          "created_at": "2026-03-01T10:01:00Z",
+          "views": 5,
+          "budget": 10
+        },
+        {
+          "id": "n3",
+          "created_at": "2026-03-01T10:02:00Z",
+          "views": 5,
+          "budget": 10
+        },
+        {
+          "id": "bait",
+          "created_at": "2026-03-01T10:03:00Z",
+          "views": 0,
+          "budget": 90
+        }
+      ]
+    },
+    {
+      "name": "numeric_id_ams001",
+      "listings": [
+        {
+          "id": 7,
+          "created_at": "2026-03-01T10:00:00Z",
+          "views": 0,
+          "applications": 3
+        },
+        {
+          "id": 8,
+          "created_at": "2026-03-01T10:05:00Z",
+          "views": 5
+        }
+      ]
+    },
+    {
+      "name": "sample_board",
+      "listings": [
+        {
+          "id": "synthetic-bait-1",
+          "created_at": "2026-01-14T12:00:00Z",
+          "views": 0,
+          "applications": 24,
+          "budget": 2500.0,
+          "poster_type": "human",
+          "is_self_advertisement": false,
+          "has_escrow": false,
+          "has_payment_evidence": false
+        },
+        {
+          "id": "synthetic-bait-2",
+          "created_at": "2026-01-14T12:00:00Z",
+          "views": 0,
+          "applications": 20,
+          "budget": 1800.0,
+          "poster_type": "human",
+          "is_self_advertisement": false,
+          "has_escrow": false,
+          "has_payment_evidence": false
+        },
+        {
+          "id": "synthetic-bait-3",
+          "created_at": "2026-01-14T12:00:00Z",
+          "views": 0,
+          "applications": 26,
+          "budget": 2200.0,
+          "poster_type": "human",
+          "is_self_advertisement": false,
+          "has_escrow": false,
+          "has_payment_evidence": false
+        },
+        {
+          "id": "synthetic-selfad-1",
+          "created_at": "2026-02-01T09:15:00Z",
+          "views": 12,
+          "applications": 0,
+          "poster_type": "agent",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "synthetic-selfad-2",
+          "created_at": "2026-02-01T09:41:00Z",
+          "views": 8,
+          "applications": 0,
+          "poster_type": "agent",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "synthetic-selfad-3",
+          "created_at": "2026-02-02T14:03:00Z",
+          "views": 5,
+          "applications": 0,
+          "poster_type": "agent",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "synthetic-real-job",
+          "created_at": "2026-02-03T18:22:00Z",
+          "views": 47,
+          "applications": 6,
+          "budget": 40.0,
+          "poster_type": "human",
+          "is_self_advertisement": false,
+          "has_escrow": true
+        }
+      ]
+    },
+    {
+      "name": "ams003_half_percent_82_5",
+      "listings": [
+        {
+          "id": "s0",
+          "created_at": "2026-03-01T10:00:00Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s1",
+          "created_at": "2026-03-01T10:00:01Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s2",
+          "created_at": "2026-03-01T10:00:02Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s3",
+          "created_at": "2026-03-01T10:00:03Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s4",
+          "created_at": "2026-03-01T10:00:04Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s5",
+          "created_at": "2026-03-01T10:00:05Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s6",
+          "created_at": "2026-03-01T10:00:06Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s7",
+          "created_at": "2026-03-01T10:00:07Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s8",
+          "created_at": "2026-03-01T10:00:08Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s9",
+          "created_at": "2026-03-01T10:00:09Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s10",
+          "created_at": "2026-03-01T10:00:10Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s11",
+          "created_at": "2026-03-01T10:00:11Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s12",
+          "created_at": "2026-03-01T10:00:12Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s13",
+          "created_at": "2026-03-01T10:00:13Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s14",
+          "created_at": "2026-03-01T10:00:14Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s15",
+          "created_at": "2026-03-01T10:00:15Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s16",
+          "created_at": "2026-03-01T10:00:16Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s17",
+          "created_at": "2026-03-01T10:00:17Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s18",
+          "created_at": "2026-03-01T10:00:18Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s19",
+          "created_at": "2026-03-01T10:00:19Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s20",
+          "created_at": "2026-03-01T10:00:20Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s21",
+          "created_at": "2026-03-01T10:00:21Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s22",
+          "created_at": "2026-03-01T10:00:22Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s23",
+          "created_at": "2026-03-01T10:00:23Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s24",
+          "created_at": "2026-03-01T10:00:24Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s25",
+          "created_at": "2026-03-01T10:00:25Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s26",
+          "created_at": "2026-03-01T10:00:26Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s27",
+          "created_at": "2026-03-01T10:00:27Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s28",
+          "created_at": "2026-03-01T10:00:28Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s29",
+          "created_at": "2026-03-01T10:00:29Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s30",
+          "created_at": "2026-03-01T10:00:30Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s31",
+          "created_at": "2026-03-01T10:00:31Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s32",
+          "created_at": "2026-03-01T10:00:32Z",
+          "is_self_advertisement": true
+        },
+        {
+          "id": "s33",
+          "created_at": "2026-03-01T10:00:33Z",
+          "is_self_advertisement": false
+        },
+        {
+          "id": "s34",
+          "created_at": "2026-03-01T10:00:34Z",
+          "is_self_advertisement": false
+        },
+        {
+          "id": "s35",
+          "created_at": "2026-03-01T10:00:35Z",
+          "is_self_advertisement": false
+        },
+        {
+          "id": "s36",
+          "created_at": "2026-03-01T10:00:36Z",
+          "is_self_advertisement": false
+        },
+        {
+          "id": "s37",
+          "created_at": "2026-03-01T10:00:37Z",
+          "is_self_advertisement": false
+        },
+        {
+          "id": "s38",
+          "created_at": "2026-03-01T10:00:38Z",
+          "is_self_advertisement": false
+        },
+        {
+          "id": "s39",
+          "created_at": "2026-03-01T10:00:39Z",
+          "is_self_advertisement": false
+        }
+      ]
+    },
+    {
+      "name": "ams005_large_scientific_budget",
+      "listings": [
+        {
+          "id": "n1",
+          "created_at": "2026-03-01T10:00:00Z",
+          "views": 5,
+          "budget": 100
+        },
+        {
+          "id": "n2",
+          "created_at": "2026-03-01T10:01:00Z",
+          "views": 5,
+          "budget": 100
+        },
+        {
+          "id": "n3",
+          "created_at": "2026-03-01T10:02:00Z",
+          "views": 5,
+          "budget": 100
+        },
+        {
+          "id": "bait",
+          "created_at": "2026-03-01T10:03:00Z",
+          "views": 0,
+          "budget": 5000000
+        }
+      ]
+    },
+    {
+      "name": "ams004_decimal_budget",
+      "listings": [
+        {
+          "id": "p",
+          "created_at": "2026-03-01T10:00:00Z",
+          "budget": 1234567.89,
+          "has_escrow": false,
+          "has_payment_evidence": false
+        }
+      ]
+    },
+    {
+      "name": "timestamp_forms_cluster_in_utc",
+      "listings": [
+        {
+          "id": "dateonly",
+          "created_at": "2026-03-01"
+        },
+        {
+          "id": "naive",
+          "created_at": "2026-03-01T00:00:00"
+        },
+        {
+          "id": "explicitz",
+          "created_at": "2026-03-01T00:00:00Z"
+        }
+      ]
+    }
+  ]
+}

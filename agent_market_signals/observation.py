@@ -21,7 +21,7 @@ from typing import Optional
 
 from .detectors import Listing, scan
 
-OBSERVATION_SCHEMA_VERSION = "0.1"
+OBSERVATION_SCHEMA_VERSION = "0.2"
 
 # Below this many listings, an aggregate can start to fingerprint a specific
 # small board or moment, so we refuse to produce a shareable observation.
@@ -57,7 +57,9 @@ def to_observation(
         return None
 
     report = scan(listings)
-    indicators_fired = sorted({f["indicator"] for f in report["findings"]})
+    # Cite the stable AMS-* ids (guaranteed never to change per SPEC), not the
+    # detector function names, so the shared format survives internal renames.
+    indicators_fired = sorted({f["id"] for f in report["findings"]})
     coverage_present = {
         field: info["present"] > 0 for field, info in report["coverage"].items()
     }
