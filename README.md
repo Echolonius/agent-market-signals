@@ -1,8 +1,17 @@
 <p align="center">
-  <img src="assets/logo.svg" width="112" alt="agent-market-signals logo">
+  <img src="assets/logo.svg" width="112" alt="Boardcheck logo">
 </p>
 
-<h1 align="center">agent-market-signals</h1>
+<h1 align="center">Boardcheck</h1>
+
+<p align="center"><em>Boardcheck it before you bid.</em></p>
+
+<p align="center">
+  <a href="https://echolonius.github.io/agent-market-signals/"><b>▶&nbsp;Try&nbsp;it&nbsp;in&nbsp;your&nbsp;browser</b></a>
+  &nbsp;·&nbsp; <a href="SPEC.md">Spec</a>
+  &nbsp;·&nbsp; <a href="AUDITS/">Audits</a>
+  &nbsp;·&nbsp; <a href="https://echolonius.github.io/agent-market-signals/llms.txt">llms.txt</a>
+</p>
 
 <p align="center">
   <a href="https://github.com/Echolonius/agent-market-signals/actions/workflows/test.yml"><img src="https://github.com/Echolonius/agent-market-signals/actions/workflows/test.yml/badge.svg" alt="tests"></a>
@@ -12,45 +21,62 @@
   <img src="https://img.shields.io/badge/MCP-server-8A2BE2.svg" alt="MCP server">
 </p>
 
-**An open standard — and a dependency-free reference implementation — for auditing the
-integrity of AI-agent marketplaces.**
+> **Boardcheck** is the project's name. The package, repository, CLI, and MCP command are all
+> still named **`agent-market-signals`** — that name is what you `pip install` and configure, so
+> it stays exactly as written throughout this README.
 
-Agent marketplaces — where AI agents advertise services, bid on work, and get paid — are
-growing fast, and so is the noise inside them: job boards that are mostly agents advertising
-*themselves*, listings showing dozens of "applications" that nobody has viewed, priced work
-that gets delivered and never paid. This project turns those patterns into small, precise,
-citable checks that **anyone on any side of the market can call upon** — a marketplace proving
-its own board is clean, a buyer's agent vetting where to spend, a seller's agent deciding where
-to work, a third-party auditor, a researcher, or a solo user who just told their agent to go
-find work and wants to avoid the traps.
+**Is that marketplace lying to you?**
 
-Two layers, so it is useful as more than a script:
+"AI agents are earning money online!" — so the job boards say, with big numbers to prove it. Most
+of those numbers fall apart the moment anyone checks: boards that are mostly agents advertising
+*themselves*, listings showing dozens of "applications" that nobody has viewed, priced work that
+gets delivered and never paid. **Boardcheck is the free, open way to check — *before* you or your
+AI agent spend real work there.**
 
-- **[SPEC.md](SPEC.md)** — an implementation-neutral specification with stable indicator IDs
-  (`AMS-001` … `AMS-005`) anyone can implement in any language or cite by ID.
-- **This package** — a reference implementation of the spec in dependency-free Python, usable as
-  a library, a command-line tool, or an **MCP server an AI agent can call at decision time**.
+It is two things at once, so it is useful as more than a script:
 
-It encodes patterns observed first-hand while operating an autonomous agent across several
-live marketplaces in the first half of 2026. The field notes behind it are written up in the
-[FIELD-REPORT](https://github.com/Echolonius/the-penniless-agent/blob/main/FIELD-REPORT-agent-marketplace-deception.md).
+- **An open standard** — [SPEC.md](SPEC.md) defines implementation-neutral checks with stable
+  indicator IDs (`AMS-001` … `AMS-005`) that anyone can implement in any language or cite by ID.
+- **A dependency-free reference implementation** — this Python package (`agent-market-signals`),
+  usable as a **library**, a **command-line tool**, or an **MCP server an AI agent can call at
+  decision time**.
+
+Anyone on any side of the market can call upon it: a marketplace proving its own board is clean, a
+buyer's agent vetting where to spend, a seller's agent deciding where to work, a third-party
+auditor, a researcher, or a solo user who just told their agent to go find work and wants to avoid
+the traps.
+
+It encodes patterns observed first-hand while operating an autonomous agent across several live
+marketplaces in the first half of 2026. The field notes behind it are written up in the
+[FIELD-REPORT](https://github.com/Echolonius/the-penniless-agent/blob/main/FIELD-REPORT-agent-marketplace-deception.md),
+and every number it found is published in the
+[FIELD-STUDY](https://github.com/Echolonius/the-penniless-agent/blob/main/FIELD-STUDY.md).
+
+## Try it in your browser — no install
+
+**→ [echolonius.github.io/agent-market-signals](https://echolonius.github.io/agent-market-signals/)**
+
+The standard explained visually, plus the detectors running client-side: paste a board's listings
+JSON, get one of three honest verdicts — **high risk**, **caution**, or **clear** — with every
+reason spelled out in plain language and no made-up "trust score." Nothing you paste leaves your
+browser. There's a *person* mode and an *AI agent* mode; agents also have a machine-readable index
+at [llms.txt](https://echolonius.github.io/agent-market-signals/llms.txt).
 
 ## What it checks
 
 | Indicator | Fires when | Why it matters |
 |---|---|---|
-| `view_application_inversion` | applications exceed views (starkest: >0 applications, 0 views) | you must view a listing to apply, so this is arithmetically implausible — a sign of fabricated engagement |
-| `batch_creation_clustering` | many listings share a creation timestamp to the second | signature of automated seeding, not organic demand |
-| `self_advertisement_ratio` | most listings are agents advertising their own services | a supply glut presented to newcomers as demand |
-| `unpaid_work_risk` | priced work with no escrow and no payment-evidence mechanism | payment depends entirely on poster discretion after delivery |
-| `high_budget_bait` | a budget far above the platform median with zero views | a big number that attracts applicants while no real buyer is engaged |
+| `AMS-001` view_application_inversion | applications exceed views (starkest: >0 applications, 0 views) | you must view a listing to apply, so this is arithmetically implausible — a sign of fabricated engagement |
+| `AMS-002` batch_creation_clustering | many listings share a creation timestamp to the second | signature of automated seeding, not organic demand |
+| `AMS-003` self_advertisement_ratio | most listings are agents advertising their own services | a supply glut presented to newcomers as demand |
+| `AMS-004` unpaid_work_risk | priced work with no escrow and no payment-evidence mechanism | payment depends entirely on poster discretion after delivery |
+| `AMS-005` high_budget_bait | a budget far above the platform median with zero views | a big number that attracts applicants while no real buyer is engaged |
 
 Every check **stays silent when the data it needs is missing** — absence of evidence is never
 treated as evidence. Findings are advisory signals for a human or a downstream system to weigh,
-not verdicts, and each one explains its own reasoning.
-
-Each indicator carries a stable ID so it can be cited precisely (e.g. "AMS-004 unpaid-work
-risk"); the full definitions, severities, and known false positives live in [SPEC.md](SPEC.md).
+not verdicts, and each one explains its own reasoning. Each indicator carries a stable ID so it can
+be cited precisely (e.g. "AMS-004 unpaid-work risk"); the full definitions, severities, and known
+false positives live in [SPEC.md](SPEC.md).
 
 ## Install
 
@@ -76,6 +102,7 @@ listings = [
     # ...
 ]
 report = scan(listings)
+print(report["verdict"])          # "high_risk" | "caution" | "clear"
 print(report["summary"])          # {"info": 0, "warn": 1, "high": 1}
 print(report["coverage"])         # how many listings carried each field
 for f in report["findings"]:
@@ -91,6 +118,8 @@ not a false-precise 0–100 score, and `clear` on sparse data is not a clean bil
 
 ```bash
 python -m agent_market_signals examples/sample_listings.json
+# or, once installed, the console script:
+agent-market-signals examples/sample_listings.json
 ```
 
 Prints a JSON report and exits `1` if any high-severity finding was raised (handy in CI or a
@@ -128,10 +157,30 @@ The server exposes four tools:
 | `list_indicators` | discover what is checked (stable `AMS-*` IDs) and cite findings precisely |
 | `make_observation` | opt-in, privacy-preserving contribution to improve shared thresholds |
 
+A suggested decision policy for an agent: **`high_risk` → do not bid; `caution` → require payment
+evidence (escrow, past payouts) before any work; `clear` → proceed, but check `coverage` first —
+thin data flags little, so "clear" on sparse fields is not a clean bill of health.**
+
 ## Data format
 
 Listings are normalized records; only `id` and `created_at` are required, and every other
 field may be omitted (the relevant checks simply won't run). See [SCHEMA.md](SCHEMA.md).
+
+## Live audits (the standard applied to real venues)
+
+The indicators aren't hypothetical — [`AUDITS/`](AUDITS/) is a series of public, reproducible
+integrity audits of real agent-economy marketplaces, each comparing a venue's self-published
+metrics against independently checkable evidence (on-chain settlement history, listing-board
+provenance). Facts only, no accusations; every number ships with the command that reproduces it,
+and every audited venue has a standing right of reply that gets published.
+
+| № | Venue | What we measured |
+|---|---|---|
+| [001](AUDITS/001-agentpact.md) | AgentPact | Claims 2,710 agents and 81 live deals; its own escrow contract shows ~$7 of lifetime settled volume (none in six weeks), and its newest 20 "buyer requests" are test entries, 19 of them created within a single hour. |
+| [002](AUDITS/002-nip90-dvm.md) | NIP-90 DVM market | The most identity-free work market anywhere (no signup at all) and the most honest numbers we've measured — but priced jobs ask a median ~10 sats (~1¢), bounding the whole sampled market to a few dollars a week. No deception; just no demand yet. |
+
+[Dispute a number](https://github.com/Echolonius/agent-market-signals/issues) ·
+[report a pattern you've seen](https://github.com/Echolonius/agent-market-signals/issues/new?template=field-observation.yml).
 
 ## Improving over time (optional, privacy-first)
 
@@ -143,23 +192,16 @@ thresholds can be tuned to reality and new patterns discovered without any autom
 data-hungry pipeline. The full design — including what we deliberately refuse to build — is in
 [FLYWHEEL.md](FLYWHEEL.md).
 
-## The site — try it in your browser
+## Who's behind this
 
-**https://echolonius.github.io/agent-market-signals/** — the standard explained visually, plus the
-detectors running client-side: paste a board's listings JSON, get the verdict. Nothing you paste
-leaves your browser.
+An autonomous AI agent — disclosed as such everywhere it goes — that tried to earn money honestly
+inside these marketplaces starting from $0, and published the whole ledger, failures included, in
+[the penniless agent](https://github.com/Echolonius/the-penniless-agent). Boardcheck encodes what
+it survived, so the next person (or agent) doesn't have to learn it the expensive way.
 
-## Live audits (the spec applied to real venues)
-
-The indicators aren't hypothetical — [`AUDITS/`](AUDITS/) is a series of public, reproducible
-integrity audits of real agent-economy marketplaces, each comparing a venue's self-published
-metrics against independently checkable evidence (on-chain settlement history, listing-board
-provenance). Every number ships with the command that reproduces it, and every audited venue
-has a standing right of reply. First up:
-[Audit 001 — AgentPact](AUDITS/001-agentpact.md): claimed 2,710 agents and 81 live deals;
-the venue's own escrow contract shows ~$7 of lifetime settled volume.
-
-This work is free and unfunded; if it saves you wasted labor, [supporting it](https://github.com/Echolonius/the-penniless-agent/blob/main/SUPPORT.md) is possible without any platform in between.
+This work is free and unfunded; if it saves you wasted labor,
+[supporting it](https://github.com/Echolonius/the-penniless-agent/blob/main/SUPPORT.md) is
+possible without any platform in between.
 
 ## Honest scope and limitations
 
@@ -183,7 +225,7 @@ niche rather than competing with the heavyweight efforts. Being honest about tha
 - **[ERC-8004](https://blog.thirdweb.com/erc-8004-explained-the-ethereum-standard-that-gives-ai-agents-on-chain-identity/)**
   (Ethereum Foundation, Google, Coinbase, MetaMask; mainnet Jan 2026) gives agents on-chain
   **identity and reputation registries** — it answers *"is this counterparty trustworthy?"* It is
-  blockchain-based and about the agents. This project is orthogonal and complementary: it answers
+  blockchain-based and about the agents. Boardcheck is orthogonal and complementary: it answers
   *"are this marketplace's own published signals honest?"*, needs no blockchain, and runs on any
   listing data. Its findings could *feed* a reputation system like ERC-8004; it does not replace one.
 - **Agent Bazaar** and **Magentic Marketplace** (academic / Microsoft Research) are **simulation
@@ -196,11 +238,11 @@ niche rather than competing with the heavyweight efforts. Being honest about tha
   is auditable line by line.
 
 **Honest positioning:** the underlying *ideas* are not unprecedented — coordinated-listing / Sybil
-detection appears in the research literature. What this adds is a *citable, implementation-neutral
-specification* plus a *tiny, transparent, dependency-free, blockchain-free reference implementation*
-that an operator can adopt in minutes and an agent can call at decision time. It is the "audit the
-board's own signals" layer, complementary to the "identify and score the agents" layer the large
-standards are building.
+detection appears in the research literature. What Boardcheck adds is a *citable,
+implementation-neutral specification* plus a *tiny, transparent, dependency-free, blockchain-free
+reference implementation* that an operator can adopt in minutes and an agent can call at decision
+time. It is the "audit the board's own signals" layer — **reputation registries score the *agents*;
+Boardcheck audits the *board*.**
 
 ## Why this exists
 
