@@ -40,4 +40,11 @@ INDICATORS = [
         "summary": "A budget far above the platform median with zero views — a "
         "large number that attracts applicants while no real buyer is engaged.",
     },
+    {
+        "id": "AMS-006",
+        "name": "prompt_injection_payload",
+        "max_severity": "high",
+        "summary": "Listing text contains instruction overrides or execution "
+        "commands designed to hijack inspecting autonomous agent harnesses.",
+    },
 ]

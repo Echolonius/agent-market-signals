@@ -39,7 +39,9 @@ function norm(item) {
     budget: item.budget ?? null,
     is_self_advertisement: item.is_self_advertisement ?? null,
     has_escrow: item.has_escrow ?? null,
-    has_payment_evidence: item.has_payment_evidence ?? null
+    has_payment_evidence: item.has_payment_evidence ?? null,
+    has_prompt_injection: item.has_prompt_injection ?? null,
+    text: [item.title, item.description, item.instructions].filter(Boolean).join(" ").toLowerCase()
   };
 }
 
@@ -53,6 +55,7 @@ function scan(listings, thresholds) {
   var L = listings.map(norm);
   var viewsTracked = L.some(l => l.views !== null && l.views > 0);
   var F = [];
+  var markers = ["ignore previous instructions", "ignore all previous instructions", "system prompt:", "system override", "cat /etc/passwd", "eval(", "curl -s | bash", "git push --force"];
   for (const l of L) {
     var v = l.views, a = l.applications;
     if (v !== null && a !== null && a > 0) {
@@ -65,6 +68,9 @@ function scan(listings, thresholds) {
     if (l.budget !== null && l.budget > 0 && l.has_escrow === false && l.has_payment_evidence === false)
       F.push({ i: "AMS-004", n: "unpaid_work_risk", s: "warn", id: l.id,
         d: `priced (${l.budget}) with no escrow and no payment-evidence mechanism — payment depends solely on poster discretion after delivery` });
+    if (l.has_prompt_injection === true || markers.some(m => l.text.includes(m)))
+      F.push({ i: "AMS-006", n: "prompt_injection_payload", s: "high", id: l.id,
+        d: `listing content contains indirect prompt injection or instruction-override payloads` });
   }
   var buckets = {};
   for (const l of L) {

@@ -184,18 +184,22 @@ thin data flags little, so "clear" on sparse fields is not a clean bill of healt
 Listings are normalized records; only `id` and `created_at` are required, and every other
 field may be omitted (the relevant checks simply won't run). See [SCHEMA.md](SCHEMA.md).
 
-## Live audits (the standard applied to real venues)
+## Live audits — the audit board (the standard applied to real venues)
 
-The indicators aren't hypothetical — [`AUDITS/`](AUDITS/) is a series of public, reproducible
+The indicators aren't hypothetical — [`AUDITS/`](AUDITS/) is a running board of public, reproducible
 integrity audits of real agent-economy marketplaces, each comparing a venue's self-published
-metrics against independently checkable evidence (on-chain settlement history, listing-board
-provenance). Facts only, no accusations; every number ships with the command that reproduces it,
-and every audited venue has a standing right of reply that gets published.
+metrics against independently checkable evidence (on-chain settlement, a public listings API, open
+protocol relays). It's a **recon board, not a blacklist** — most venues below check out. Facts only,
+no accusations; every number ships with the command that reproduces it, and every audited venue has a
+standing right of reply that gets published.
 
-| № | Venue | What we measured |
-|---|---|---|
-| [001](AUDITS/001-agentpact.md) | AgentPact | Claims 2,710 agents and 81 live deals; its own escrow contract shows ~$7 of lifetime settled volume (none in six weeks), and its newest 20 "buyer requests" are test entries, 19 of them created within a single hour. |
-| [002](AUDITS/002-nip90-dvm.md) | NIP-90 DVM market | The most identity-free work market anywhere (no signup at all) and the most honest numbers we've measured — but priced jobs ask a median ~10 sats (~1¢), bounding the whole sampled market to a few dollars a week. No deception; just no demand yet. |
+| № | Venue | Surface | Finding | What we measured |
+|---|---|---|---|---|
+| [001](AUDITS/001-agentpact.md) | AgentPact | on-chain | ❌ doesn't reconcile | Claims 2,710 agents and 81 live deals; its own escrow contract shows ~$7 of lifetime settled volume (none in six weeks), and its newest 20 "buyer requests" are test entries, 19 of them created within a single hour. |
+| [002](AUDITS/002-nip90-dvm.md) | NIP-90 DVM market | protocol | ✅ honest, tiny | The most identity-free work market anywhere (no signup at all) and the most honest numbers we've measured — but priced jobs ask a median ~10 sats (~1¢), bounding the whole sampled market to a few dollars a week. No deception; just no demand yet. |
+| [003](AUDITS/003-virtuals-acp.md) | Virtuals Protocol ACP | on-chain | ✅ active, real | The counter-example: a genuinely active protocol the chain confirms — ~705k transactions across its escrow contracts, six orders of magnitude past AgentPact. Caveat for readers: its "aGDP" headline measures gross value processed (incl. fund-managed trading), not agent service earnings. |
+| [004](AUDITS/004-jobforagent.md) | JobForAgent | API | ⚠️ thin, stale | "The First Job Board for AI Agents" is 27 postings, none newer than Sept 2025 — ordinary human freelance gigs. The detectors, run live, return `clear`: nothing faked (no engagement metrics to fake), just tiny and stale. |
+| [005](AUDITS/005-ai-agents-directory.md) | AI Agents Directory | API | ✅ count checks out | Advertises "2,704 Agents"; its public API returns exactly 2,704, so the count is honest and self-verifiable. Its companion "3,002 Skills" headline has no public endpoint to verify. |
 
 [Dispute a number](https://github.com/Echolonius/agent-market-signals/issues) ·
 [report a pattern you've seen](https://github.com/Echolonius/agent-market-signals/issues/new?template=field-observation.yml).

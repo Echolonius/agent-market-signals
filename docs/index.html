@@ -126,6 +126,28 @@ details summary{cursor:pointer;font-weight:600;font-size:.94rem}
 details[open] summary{margin-bottom:6px}
 details p{font-size:.92rem;color:var(--mid)}
 
+/* recon board — filterable audit cards (static HTML, JS only toggles display) */
+.filterbar{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 4px}
+.fbtn{background:transparent;color:var(--mid);border:1.5px solid var(--faint);border-radius:999px;
+  padding:7px 15px;font-size:.84rem;font-weight:650;cursor:pointer;transition:border-color .15s,color .15s,background .15s}
+.fbtn:hover{border-color:var(--fg);color:var(--fg)}
+.fbtn[aria-pressed="true"]{border-color:var(--fg);color:var(--bg);background:var(--fg)}
+.fbtn .fdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;margin-right:6px;vertical-align:middle}
+.fbtn.f-green{color:var(--ok)} .fbtn.f-amber{color:var(--warn)} .fbtn.f-red{color:var(--high)}
+.fbtn.f-green[aria-pressed="true"],.fbtn.f-amber[aria-pressed="true"],.fbtn.f-red[aria-pressed="true"]{color:var(--bg);border-color:var(--fg);background:var(--fg)}
+.audit-grid{display:grid;gap:12px;margin:14px 0}
+.acard{border:1px solid var(--faint);background:var(--card);border-radius:12px;padding:15px 18px;transition:opacity .2s}
+.acard.hide{display:none}
+.acard .ahead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:7px}
+.acard .anum{font:700 .76rem/1 var(--mono);color:var(--mid)}
+.acard .aven{font-weight:750;font-size:1.02rem}
+.acard .aven a{text-decoration:none}.acard .aven a:hover{text-decoration:underline}
+.acat{font:700 .71rem/1 var(--mono);border:1px solid currentColor;border-radius:999px;padding:5px 9px;white-space:nowrap;margin-left:auto}
+.acat.red{color:var(--high)} .acat.amber{color:var(--warn)} .acat.green{color:var(--ok)}
+.asurf{font:600 .69rem/1 var(--mono);color:var(--mid);border:1px solid var(--faint);border-radius:999px;padding:5px 9px;white-space:nowrap}
+.acard p{margin:0;color:var(--mid);font-size:.92rem}
+@media(max-width:520px){.acat{margin-left:0}}
+
 .tip{border:1px solid var(--faint);border-radius:12px;background:var(--card);
   padding:16px 20px;margin:44px 0 0;font-size:.9rem;color:var(--mid);text-align:center}
 footer{border-top:1px solid var(--faint);margin-top:34px;padding:24px 0 46px;color:var(--mid);font-size:.86rem;text-align:center}
@@ -202,13 +224,38 @@ footer{border-top:1px solid var(--faint);margin-top:34px;padding:24px 0 46px;col
 </section>
 
 <section id="audits" data-mode="human">
-<h2>Public audits</h2>
-<p>We also apply the standard to real venues ourselves: a marketplace’s advertised numbers, checked against evidence anyone can reproduce — like its own blockchain settlement records. Facts only; no accusations; every number comes with the command that produced it; every audited venue can reply, forever, and the reply gets published.</p>
-<table>
-<tr><th>№</th><th>Venue</th><th>What we measured</th></tr>
-<tr><td>001</td><td><a href="https://github.com/Echolonius/agent-market-signals/blob/main/AUDITS/001-agentpact.md">AgentPact</a></td><td>Claims 2,710 agents and 81 live deals. Its own payment contract shows about $7 ever settled — none in six weeks — and its newest 20 “buyer requests” are test entries, 19 of them created within a single hour.</td></tr>
-<tr><td>002</td><td><a href="https://github.com/Echolonius/agent-market-signals/blob/main/AUDITS/002-nip90-dvm.md">NIP-90 DVM market</a></td><td>The most identity-free work market anywhere (no signup at all) — and the most honest numbers we’ve measured. But priced jobs ask a median of 10 sats (~1¢), bounding the whole sampled market to a few dollars a week. No deception; just no demand yet.</td></tr>
-</table>
+<h2>The audit board</h2>
+<p>We don’t just define the standard — we run it. Every venue below was checked against evidence anyone can reproduce: its own on-chain settlement, a public listings API, or open protocol relays. This is a <b>recon board, not a blacklist</b> — <span style="color:var(--ok)">green means the numbers held up</span>, and most do. Facts only; no accusations; every figure ships with the command that produced it, and every venue has a standing right of reply that gets published.</p>
+
+<div class="filterbar" role="group" aria-label="Filter audits by finding">
+  <button class="fbtn" aria-pressed="true" data-filter="all" onclick="filterAudits('all',this)">All 5</button>
+  <button class="fbtn f-green" aria-pressed="false" data-filter="green" onclick="filterAudits('green',this)"><span class="fdot"></span>Checks out</button>
+  <button class="fbtn f-amber" aria-pressed="false" data-filter="amber" onclick="filterAudits('amber',this)"><span class="fdot"></span>Caution</button>
+  <button class="fbtn f-red" aria-pressed="false" data-filter="red" onclick="filterAudits('red',this)"><span class="fdot"></span>Doesn’t reconcile</button>
+</div>
+
+<div class="audit-grid" id="auditGrid">
+  <div class="acard" data-cat="red">
+    <div class="ahead"><span class="anum">001</span><span class="aven"><a href="https://github.com/Echolonius/agent-market-signals/blob/main/AUDITS/001-agentpact.md">AgentPact</a></span><span class="asurf">on-chain</span><span class="acat red">Doesn’t reconcile</span></div>
+    <p>Claims 2,710 agents and 81 live deals; its own escrow contract shows about $7 ever settled — none in six weeks — and its newest 20 “buyer requests” are test entries, 19 created within a single hour.</p>
+  </div>
+  <div class="acard" data-cat="green">
+    <div class="ahead"><span class="anum">002</span><span class="aven"><a href="https://github.com/Echolonius/agent-market-signals/blob/main/AUDITS/002-nip90-dvm.md">NIP-90 DVM market</a></span><span class="asurf">protocol</span><span class="acat green">Honest · tiny</span></div>
+    <p>The most identity-free work market anywhere (no signup at all) and the most honest numbers we’ve measured — but priced jobs ask a median of ~10 sats (~1¢), bounding the whole sampled market to a few dollars a week. No deception; just no demand yet.</p>
+  </div>
+  <div class="acard" data-cat="green">
+    <div class="ahead"><span class="anum">003</span><span class="aven"><a href="https://github.com/Echolonius/agent-market-signals/blob/main/AUDITS/003-virtuals-acp.md">Virtuals Protocol ACP</a></span><span class="asurf">on-chain</span><span class="acat green">Active · real</span></div>
+    <p>The counter-example: a genuinely active protocol the chain confirms — roughly 705,000 transactions across its escrow contracts, six orders of magnitude past AgentPact. One caveat for readers: its “aGDP” headline measures gross value processed (including fund-managed trading), not agent service earnings.</p>
+  </div>
+  <div class="acard" data-cat="amber">
+    <div class="ahead"><span class="anum">004</span><span class="aven"><a href="https://github.com/Echolonius/agent-market-signals/blob/main/AUDITS/004-jobforagent.md">JobForAgent</a></span><span class="asurf">API</span><span class="acat amber">Thin · stale</span></div>
+    <p>“The First Job Board for AI Agents” is 27 postings, none newer than September 2025 — ordinary human freelance gigs. We ran the detectors live and they return <b>clear</b>: nothing is faked (there are no engagement metrics to fake); the board is simply tiny and stale.</p>
+  </div>
+  <div class="acard" data-cat="green">
+    <div class="ahead"><span class="anum">005</span><span class="aven"><a href="https://github.com/Echolonius/agent-market-signals/blob/main/AUDITS/005-ai-agents-directory.md">AI Agents Directory</a></span><span class="asurf">API</span><span class="acat green">Count checks out</span></div>
+    <p>Advertises “2,704 Agents” — its public API returns exactly 2,704, so the count is honest and self-verifiable. Its companion “3,002 Skills” headline has no public endpoint to check, so weigh the two claims differently.</p>
+  </div>
+</div>
 <p class="small muted"><a href="https://github.com/Echolonius/agent-market-signals/issues">Dispute a number</a> · <a href="https://github.com/Echolonius/agent-market-signals/issues/new?template=field-observation.yml">Report a pattern you’ve seen</a></p>
 </section>
 
@@ -292,6 +339,13 @@ function el(tag, cls, text){
   return n;
 }
 function loadSample(){document.getElementById('input').value=JSON.stringify(SAMPLE,null,2)}
+function filterAudits(cat, btn){
+  const bar = btn.parentNode;
+  bar.querySelectorAll('.fbtn').forEach(b=>b.setAttribute('aria-pressed', String(b===btn)));
+  document.querySelectorAll('#auditGrid .acard').forEach(c=>{
+    c.classList.toggle('hide', !(cat==='all' || c.getAttribute('data-cat')===cat));
+  });
+}
 function run(){
   const vEl=document.getElementById('verdict'), fEl=document.getElementById('findings'), cEl=document.getElementById('coverage');
   fEl.replaceChildren(); cEl.replaceChildren(); vEl.replaceChildren();

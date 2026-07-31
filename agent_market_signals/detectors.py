@@ -80,6 +80,10 @@ class Listing:
     is_self_advertisement: Optional[bool] = None
     has_escrow: Optional[bool] = None
     has_payment_evidence: Optional[bool] = None
+    has_prompt_injection: Optional[bool] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    instructions: Optional[str] = None
 
     @classmethod
     def from_dict(cls, item: dict) -> "Listing":
@@ -98,6 +102,10 @@ class Listing:
             is_self_advertisement=item.get("is_self_advertisement"),
             has_escrow=item.get("has_escrow"),
             has_payment_evidence=item.get("has_payment_evidence"),
+            has_prompt_injection=item.get("has_prompt_injection"),
+            title=item.get("title"),
+            description=item.get("description"),
+            instructions=item.get("instructions"),
         )
 
 
@@ -176,6 +184,38 @@ def unpaid_work_risk(listing: Listing) -> Optional[Finding]:
             "warn",
             f"priced ({_num(listing.budget)}) with no escrow and no payment-evidence "
             "mechanism — payment depends solely on poster discretion after delivery",
+            listing.id,
+        )
+    return None
+
+
+INJECTION_MARKERS = [
+    "ignore previous instructions",
+    "ignore all previous instructions",
+    "system prompt:",
+    "system override",
+    "cat /etc/passwd",
+    "eval(",
+    "curl -s | bash",
+    "git push --force",
+]
+
+
+def prompt_injection_payload(listing: Listing) -> Optional[Finding]:
+    """Listing text contains instruction overrides or execution commands. (Indicator AMS-006.)"""
+    if listing.has_prompt_injection is True:
+        return Finding(
+            "prompt_injection_payload",
+            "high",
+            "listing content contains indirect prompt injection or instruction-override payloads",
+            listing.id,
+        )
+    text = " ".join(filter(None, [listing.title, listing.description, listing.instructions])).lower()
+    if any(marker in text for marker in INJECTION_MARKERS):
+        return Finding(
+            "prompt_injection_payload",
+            "high",
+            "listing content contains indirect prompt injection or instruction-override payloads",
             listing.id,
         )
     return None
@@ -331,6 +371,9 @@ def scan(listings: list[Listing], thresholds: Optional[Thresholds] = None) -> di
         if result is not None:
             findings.append(result)
         result = unpaid_work_risk(listing)
+        if result is not None:
+            findings.append(result)
+        result = prompt_injection_payload(listing)
         if result is not None:
             findings.append(result)
 

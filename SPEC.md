@@ -100,6 +100,12 @@ real buyer engagement.
 **Known false positives:** genuinely large, newly-posted, not-yet-viewed listings; tune the
 multiple to the platform.
 
+### AMS-006 — indirect prompt injection payload
+**Fires when** a listing's text content (title, description, or instructions) contains instruction-override patterns (e.g., `ignore previous instructions`, `system override`, `cat /etc/passwd`, `eval(`, `curl -s | bash`) or explicit prompt-injection payload markers.
+Severity **`high`**.
+**Rationale:** malicious listing posters or untrusted sellers attempt to trick inspecting AI agent harnesses into executing unauthorized system operations, exfiltrating credentials, or bypassing host security controls.
+**Known false positives:** legitimate security research, benchmark datasets, or educational listings (handled via context tuning).
+
 ## Threshold defaults, provenance, and tuning
 
 Every numeric cutoff has a single authoritative definition — in the reference implementation,
