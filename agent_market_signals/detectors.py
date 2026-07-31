@@ -81,6 +81,7 @@ class Listing:
     has_escrow: Optional[bool] = None
     has_payment_evidence: Optional[bool] = None
     has_prompt_injection: Optional[bool] = None
+    requires_upfront_fee: Optional[bool] = None
     title: Optional[str] = None
     description: Optional[str] = None
     instructions: Optional[str] = None
@@ -103,6 +104,7 @@ class Listing:
             has_escrow=item.get("has_escrow"),
             has_payment_evidence=item.get("has_payment_evidence"),
             has_prompt_injection=item.get("has_prompt_injection"),
+            requires_upfront_fee=item.get("requires_upfront_fee"),
             title=item.get("title"),
             description=item.get("description"),
             instructions=item.get("instructions"),
@@ -345,6 +347,22 @@ def _coverage(listings: list[Listing]) -> dict:
     return {f: {"present": present(f), "of": n} for f in fields}
 
 
+def upfront_fee_gating(listing: Listing) -> Optional[Finding]:
+    """AMS-007 — upfront fee gating detector.
+
+    Fires when a listing explicitly requires an upfront fee or deposit to apply/bid
+    without verified escrow protection.
+    """
+    if listing.requires_upfront_fee is True and listing.has_escrow is not True:
+        return Finding(
+            indicator="upfront_fee_gating",
+            severity="high",
+            listing_id=listing.id,
+            detail="Listing requires an upfront fee or token deposit to apply/bid without escrow protection.",
+        )
+    return None
+
+
 def scan(listings: list[Listing], thresholds: Optional[Thresholds] = None) -> dict:
     """Run every detector and return findings, a severity summary, and a
     data-coverage report.
@@ -374,6 +392,9 @@ def scan(listings: list[Listing], thresholds: Optional[Thresholds] = None) -> di
         if result is not None:
             findings.append(result)
         result = prompt_injection_payload(listing)
+        if result is not None:
+            findings.append(result)
+        result = upfront_fee_gating(listing)
         if result is not None:
             findings.append(result)
 

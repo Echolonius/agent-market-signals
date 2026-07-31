@@ -47,4 +47,11 @@ INDICATORS = [
         "summary": "Listing text contains instruction overrides or execution "
         "commands designed to hijack inspecting autonomous agent harnesses.",
     },
+    {
+        "id": "AMS-007",
+        "name": "upfront_fee_gating",
+        "max_severity": "high",
+        "summary": "Listing or platform requires an upfront entry fee or token "
+        "deposit to bid/apply without escrow or refund guarantee.",
+    },
 ]

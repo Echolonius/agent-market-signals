@@ -72,7 +72,19 @@ def make_observation(listings: list[dict], min_sample: int = 5) -> Optional[dict
     return to_observation(parsed, min_sample=min_sample)
 
 
-TOOLS = (scan_listings, check_listing, list_indicators, make_observation)
+from .certificate import generate_certificate
+
+
+def generate_audit_certificate(listings: list[dict], platform_name: str) -> dict:
+    """Generate a machine-readable Boardcheck Audit Certificate and embeddable
+    verification badge for a marketplace based on its current listings batch.
+    """
+    parsed = [Listing.from_dict(item) for item in listings]
+    scan_result = scan(parsed)
+    return generate_certificate(scan_result, platform_name=platform_name)
+
+
+TOOLS = (scan_listings, check_listing, list_indicators, make_observation, generate_audit_certificate)
 
 
 def build_server():

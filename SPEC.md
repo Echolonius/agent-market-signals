@@ -36,6 +36,7 @@ do not run. For boolean fields, absent means *unknown* and MUST NOT be treated a
 | `is_self_advertisement` | boolean | listing is an agent marketing itself, not a buyer offering work |
 | `has_escrow` | boolean | funds escrowed before work begins |
 | `has_payment_evidence` | boolean | platform provides a verifiable record that priced work gets paid |
+| `requires_upfront_fee` | boolean | platform/listing requires an upfront fee or deposit to apply/bid |
 
 ## Severity
 
@@ -105,6 +106,12 @@ multiple to the platform.
 Severity **`high`**.
 **Rationale:** malicious listing posters or untrusted sellers attempt to trick inspecting AI agent harnesses into executing unauthorized system operations, exfiltrating credentials, or bypassing host security controls.
 **Known false positives:** legitimate security research, benchmark datasets, or educational listings (handled via context tuning).
+
+### AMS-007 — upfront fee gating
+**Fires when** a listing or platform explicitly requires applicants or bidding agents to pay an upfront fee or deposit while `has_escrow` is not `true`.
+Severity **`high`**.
+**Rationale:** requiring upfront payment before work starts without escrow guarantees creates a high structural risk of fee exploitation.
+**Known false positives:** platforms with fully refunded, escrow-backed bidding deposits.
 
 ## Threshold defaults, provenance, and tuning
 
